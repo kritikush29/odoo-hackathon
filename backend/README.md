@@ -11,8 +11,9 @@ This backend provides the Python/FastAPI API, PostgreSQL persistence, and Celery
    - `docker compose up -d postgres redis`
 4. Install dependencies:
    - `pip install -r requirements.txt`
-5. Run the app:
-   - `uvicorn app.main:app --reload --host 0.0.0.0 --port 8000`
+5. Run the app from the backend directory with the package path set:
+   - `PYTHONPATH=. uvicorn app.main:app --reload --host 0.0.0.0 --port 8000`
+   - On Windows PowerShell: `Set-Location .; $env:PYTHONPATH = (Get-Location).Path; uvicorn app.main:app --reload --host 127.0.0.1 --port 8000`
 
 ## Main modules
 
