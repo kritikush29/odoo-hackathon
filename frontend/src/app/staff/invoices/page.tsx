@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   useInvoices,
@@ -33,7 +33,7 @@ import {
 const INVOICE_STEPS = ["Draft", "Confirmed", "Paid"];
 const STATUS_TABS = ["All", "Draft", "Confirmed", "Paid", "Overdue"];
 
-export default function InvoicesPage() {
+function InvoicesContent() {
   const searchParams = useSearchParams();
   const [statusFilter, setStatusFilter] = useState("All");
   const [search, setSearch] = useState("");
@@ -550,5 +550,22 @@ export default function InvoicesPage() {
         )}
       </Drawer>
     </div>
+  );
+}
+
+export default function InvoicesPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex h-96 items-center justify-center">
+          <div className="flex items-center gap-2 text-sm text-muted">
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+            Loading invoices...
+          </div>
+        </div>
+      }
+    >
+      <InvoicesContent />
+    </Suspense>
   );
 }
