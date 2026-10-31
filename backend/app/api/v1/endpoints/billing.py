@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from typing import Any
 from uuid import uuid4
 
 from fastapi import APIRouter, HTTPException, status
 
 from app.schemas.billing import BillingJobStatus, BillingRunRequest
+from app.tasks.billing_tasks import generate_billing_day
 
 router = APIRouter()
 
@@ -15,12 +15,13 @@ BILLING_JOBS: dict[str, BillingJobStatus] = {}
 @router.post("/billing/run")
 async def run_billing(payload: BillingRunRequest) -> dict[str, str]:
     job_id = uuid4().hex
-    status_value = "completed" if not payload.dry_run else "dry-run"
+    result = generate_billing_day(payload.dry_run)
+    status_value = result["status"]
     BILLING_JOBS[job_id] = BillingJobStatus(
         status=status_value,
-        created=18 if not payload.dry_run else 0,
-        skipped=3,
-        failed=[],
+        created=result["created"],
+        skipped=result["skipped"],
+        failed=result["failed"],
     )
     return {"job_id": job_id}
 
