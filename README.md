@@ -6,48 +6,43 @@ Built to replace error-prone manual spreadsheets, this platform ensures no renew
 
 ✨ Core Features
 
-🔐 Role-Based Access Control (RBAC)
-
-Strict Auth Policies: 1 Email = 1 Account. Passwords require >8 characters, mixed case, and special characters. Includes secure email password resets.
-
-Admin: Full system control, manages staff, creates tax rules, and discount policies.
-
-Internal Staff: Manages day-to-day customer operations, quotes, and billing with restricted access.
-
-Customer Portal: A self-serve interface for customers to view and manage their active subscriptions and invoices.
+🔐 Role-Based Access Control (RBAC) & Dedicated Auth
+- Strict Auth Policies: Passwords require >=8 characters, at least 1 uppercase letter, and at least 1 special symbol.
+- Separate Login & Signup Page for Admin, Staff, and Customer with 1-click test pills.
+- Admin: Full system control, manages staff, creates tax rules, discount policies, and monitors all registered customers and generated invoice counts.
+- Internal Staff: Manages day-to-day customer operations, quotes, and subscriptions with restricted access.
+- Customer Portal: A self-serve interface for customers to view active subscriptions, toggle add-ons, on-demand **Generate Invoice**, and **Print Invoice** in INR (₹).
 
 📦 Catalog & Plan Engine
-
-Variant Products: Support for base products and add-ons with pricing variants (e.g., specific brand selections automatically adjusting the base price).
-
-Flexible Plans: Customizable billing frequencies (daily, weekly, monthly, yearly) and behaviors (auto-closing, manual pause, early closure, or renewals).
+- Variant Products: Support for base products and add-ons with pricing variants (e.g., brand selections automatically adjusting the base price in ₹).
+- Flexible Plans: Customizable billing frequencies (daily, weekly, monthly, yearly) and behaviors (auto-closing, renewals).
 
 🔄 Quote-to-Cash Pipeline
-
-Quotation Templates: Quick-start offers with pre-configured plans, products, and expiration dates.
-
-Subscription State Machine: Seamless transitions from Draft ➔ Quotation ➔ Confirmed ➔ Active ➔ Closed.
+- Quotation Templates: Quick-start offers with pre-configured plans, products, and expiration dates.
+- Subscription State Machine: Seamless transitions from Draft ➔ Quotation ➔ Confirmed ➔ Active ➔ Closed.
 
 🧾 Automated Billing & Invoicing
-
-Billing Day Automation: Automatically generates hundreds of invoices simultaneously based on active subscriptions without duplicates or skips.
-
-Dynamic Taxes & Discounts: Auto-calculates admin-defined tax rules. Applies complex discount rules (fixed/percentage, min-purchase limits, usage limits) to the next invoice automatically.
-
-Invoice Lifecycle: Tracks invoices through Draft ➔ Confirmed ➔ Paid.
+- Billing Day Automation: Automatically generates invoices simultaneously based on active subscriptions without duplicates or skips.
+- Dynamic Taxes & Discounts: Auto-calculates tax rules and applies complex discount rules (fixed/percentage, min-purchase limits) to invoices.
+- Invoice Lifecycle: Tracks invoices through Draft ➔ Confirmed ➔ Paid with print preview dialogs.
 
 📊 Finance Dashboard & Performance
+- Real-Time Analytics: Single pane of glass for active subscriptions, total revenue, collected payments, and overdue invoices.
+- All Currencies in Indian Rupees (₹).
+- High Performance: Loads in under two seconds SLA.
 
-Real-Time Analytics: Single pane of glass for active subscriptions, total revenue, collected payments, and overdue invoices.
+🛠️ Tech Stack & Architecture
 
-High Performance: Optimized database queries and architecture ensure the entire system—especially reporting dashboards—loads in under two seconds, even with thousands of active records.
+- **Frontend & Web Platform (`frontend/`):** React 19, Tailwind CSS v4, Lucide Icons, Vite, and Express.js
+- **Backend Services (`backend/`):** Python (FastAPI), SQLAlchemy, PostgreSQL, Redis + Celery
+- **Currency:** Indian Rupees (₹)
+- **Security:** Strict password rules (min 8 chars, 1 uppercase, 1 symbol)
 
-🛠️ Tech Stack (Example/Placeholder)
-
-Frontend: React.js / Next.js / Tailwind CSS
-
-Backend:  Python (FastAPI)
-
-Database: PostgreSQL (for relational data integrity)
-
-Caching & Background Jobs: Redis + Celery )
+### Quick Run (Frontend & Web Platform)
+```bash
+cd frontend
+npm install
+npm run build
+npm start
+# Server runs on http://localhost:5000
+```

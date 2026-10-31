@@ -1,0 +1,1 @@
+@tailwind base;@tailwind components;@tailwind utilities;@layer base{body{@apply bg-slate-50 text-slate-900;}}@media print{body *{visibility:hidden}#printable-invoice-area,#printable-invoice-area *{visibility:visible}#printable-invoice-area{width:100%;margin:0;padding:20px;position:absolute;top:0;left:0}}

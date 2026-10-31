@@ -1,0 +1,657 @@
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const DATA_FILE = path.join(__dirname, 'data.json');
+
+const getInitialData = () => ({
+  users: [
+    {
+      id: 'USR-001',
+      name: 'Elena Vance',
+      email: 'admin@brightloop.com',
+      role: 'ADMIN',
+      password: 'Password123!',
+      company: 'Brightloop HQ',
+      createdAt: '2026-01-01T00:00:00Z'
+    },
+    {
+      id: 'USR-002',
+      name: 'Marcus Brody',
+      email: 'staff@brightloop.com',
+      role: 'STAFF',
+      password: 'Password123!',
+      company: 'Brightloop Operations',
+      createdAt: '2026-01-05T00:00:00Z'
+    },
+    {
+      id: 'USR-003',
+      name: 'Sarah Chen',
+      email: 'sarah@acmecorp.com',
+      role: 'CUSTOMER',
+      password: 'Password123!',
+      company: 'Acme Corp',
+      createdAt: '2026-02-01T00:00:00Z'
+    },
+    {
+      id: 'USR-004',
+      name: 'David Patel',
+      email: 'david@novaretail.com',
+      role: 'CUSTOMER',
+      password: 'Password123!',
+      company: 'Nova Retail',
+      createdAt: '2026-03-15T00:00:00Z'
+    },
+    {
+      id: 'USR-005',
+      name: 'Liam Torres',
+      email: 'liam@zenithsystems.io',
+      role: 'CUSTOMER',
+      password: 'Password123!',
+      company: 'Zenith Systems',
+      createdAt: '2026-04-10T00:00:00Z'
+    }
+  ],
+  products: [
+    {
+      id: 'PROD-001',
+      name: 'Brightloop ERP Core',
+      type: 'Software License',
+      salesPrice: 1200,
+      costPrice: 350,
+      notes: 'Full ERP suite covering accounting, inventory, and automated billing engine.',
+      variants: [
+        { id: 'var-1', name: 'Standard Edition', priceAdjustment: 0 },
+        { id: 'var-2', name: 'Brand Edition', priceAdjustment: 560 },
+        { id: 'var-3', name: 'High-Volume Enterprise Cloud', priceAdjustment: 950 }
+      ]
+    },
+    {
+      id: 'PROD-002',
+      name: 'Multi-Entity Ledger Consolidation',
+      type: 'Add-on',
+      salesPrice: 280,
+      costPrice: 45,
+      notes: 'Add-on to consolidate cross-border multi-currency financials seamlessly.',
+      variants: [
+        { id: 'var-4', name: 'Up to 5 Entities', priceAdjustment: 0 },
+        { id: 'var-5', name: 'Unlimited Global Entities', priceAdjustment: 220 }
+      ]
+    },
+    {
+      id: 'PROD-003',
+      name: 'AI Invoice OCR & Bank Reconciliation',
+      type: 'Add-on',
+      salesPrice: 160,
+      costPrice: 25,
+      notes: 'Matches incoming payments and extracts invoices instantly without human typing.',
+      variants: [
+        { id: 'var-6', name: 'Standard Batch OCR', priceAdjustment: 0 },
+        { id: 'var-7', name: 'Real-time Autonomous Match', priceAdjustment: 90 }
+      ]
+    },
+    {
+      id: 'PROD-004',
+      name: 'Dedicated 24/7 SLA & Mission Critical Support',
+      type: 'Service',
+      salesPrice: 450,
+      costPrice: 120,
+      notes: 'Direct phone & escalation channel to principal billing engineers.',
+      variants: [
+        { id: 'var-8', name: 'Silver 12h SLA', priceAdjustment: 0 },
+        { id: 'var-9', name: 'Gold 4h SLA', priceAdjustment: 250 },
+        { id: 'var-10', name: 'Platinum 15min Dedicated Rep', priceAdjustment: 600 }
+      ]
+    }
+  ],
+  plans: [
+    {
+      id: 'PLAN-001',
+      name: 'Growth Monthly',
+      code: 'GROWTH-MO',
+      cost: 150,
+      frequency: 'monthly', // daily, weekly, monthly, yearly
+      minQuantity: 1,
+      startDate: '2026-01-01',
+      endDate: '2028-12-31',
+      autoCloseOnEnd: false,
+      allowPause: true,
+      allowRenewal: true,
+      allowEarlyClose: true,
+      description: 'Flexible month-to-month subscription for agile scaling teams.'
+    },
+    {
+      id: 'PLAN-002',
+      name: 'Enterprise Annual',
+      code: 'ENT-YR',
+      cost: 1500,
+      frequency: 'yearly',
+      minQuantity: 1,
+      startDate: '2026-01-01',
+      endDate: '2029-12-31',
+      autoCloseOnEnd: false,
+      allowPause: true,
+      allowRenewal: true,
+      allowEarlyClose: false,
+      description: 'Annual commitment contract with volume discounts and lock-in rates.'
+    },
+    {
+      id: 'PLAN-003',
+      name: 'Pilot Weekly Sprint',
+      code: 'SPRINT-WK',
+      cost: 45,
+      frequency: 'weekly',
+      minQuantity: 1,
+      startDate: '2026-01-01',
+      endDate: '2026-12-31',
+      autoCloseOnEnd: true,
+      allowPause: false,
+      allowRenewal: false,
+      allowEarlyClose: true,
+      description: 'Short fixed-term pilot trial that automatically closes upon expiry.'
+    },
+    {
+      id: 'PLAN-004',
+      name: 'High-Frequency Daily Cloud',
+      code: 'DAILY-BURST',
+      cost: 12,
+      frequency: 'daily',
+      minQuantity: 1,
+      startDate: '2026-01-01',
+      endDate: '2027-12-31',
+      autoCloseOnEnd: true,
+      allowPause: true,
+      allowRenewal: true,
+      allowEarlyClose: true,
+      description: 'Micro-billing plan measured and invoiced every single day.'
+    }
+  ],
+  taxes: [
+    {
+      id: 'TAX-001',
+      name: 'Standard GST / VAT',
+      rate: 18,
+      isDefault: true,
+      description: 'Universal 18% standard goods & digital services tax rule'
+    },
+    {
+      id: 'TAX-002',
+      name: 'US Tech Sales Tax',
+      rate: 8.25,
+      isDefault: false,
+      description: 'Applicable for US-domiciled SaaS software licenses'
+    },
+    {
+      id: 'TAX-003',
+      name: 'EU Digital Services VAT',
+      rate: 20,
+      isDefault: false,
+      description: 'Statutory 20% European digital commerce tax'
+    },
+    {
+      id: 'TAX-004',
+      name: 'Zero-Rated / Tax Exempt',
+      rate: 0,
+      isDefault: false,
+      description: 'Export or B2B Reverse Charge tax exemption'
+    }
+  ],
+  discounts: [
+    {
+      id: 'DISC-001',
+      code: 'SEATS20',
+      name: 'Volume Expansion Discount',
+      type: 'percentage', // percentage or fixed
+      value: 20,
+      minQuantity: 5,
+      minPurchaseAmount: 1000,
+      startDate: '2026-01-01',
+      endDate: '2027-12-31',
+      maxUsageCount: 50,
+      currentUsageCount: 7,
+      scope: 'whole_subscription', // whole_subscription or specific_products
+      applicableProductIds: [],
+      isActive: true
+    },
+    {
+      id: 'DISC-002',
+      code: 'STARTUP100',
+      name: 'Early Stage Startup Grant',
+      type: 'fixed',
+      value: 100,
+      minQuantity: 1,
+      minPurchaseAmount: 400,
+      startDate: '2026-01-01',
+      endDate: '2026-12-31',
+      maxUsageCount: 100,
+      currentUsageCount: 22,
+      scope: 'whole_subscription',
+      applicableProductIds: [],
+      isActive: true
+    },
+    {
+      id: 'DISC-003',
+      code: 'ADDON15',
+      name: 'Smart Add-On Promotion',
+      type: 'percentage',
+      value: 15,
+      minQuantity: 1,
+      minPurchaseAmount: 150,
+      startDate: '2026-01-01',
+      endDate: '2027-06-30',
+      maxUsageCount: 40,
+      currentUsageCount: 4,
+      scope: 'specific_products',
+      applicableProductIds: ['PROD-002', 'PROD-003'],
+      isActive: true
+    }
+  ],
+  quotationTemplates: [
+    {
+      id: 'QT-001',
+      name: 'SME Starter Foundation Template',
+      planId: 'PLAN-001',
+      validityDays: 30,
+      paymentTerms: 'Net 15',
+      taxId: 'TAX-001',
+      discountCode: 'STARTUP100',
+      lines: [
+        {
+          productId: 'PROD-001',
+          variantId: 'var-1',
+          quantity: 1,
+          unitPrice: 1200
+        },
+        {
+          productId: 'PROD-003',
+          variantId: 'var-6',
+          quantity: 1,
+          unitPrice: 160
+        }
+      ]
+    },
+    {
+      id: 'QT-002',
+      name: 'Enterprise Scale Bundle',
+      planId: 'PLAN-002',
+      validityDays: 45,
+      paymentTerms: 'Net 30',
+      taxId: 'TAX-001',
+      discountCode: 'SEATS20',
+      lines: [
+        {
+          productId: 'PROD-001',
+          variantId: 'var-2', // Brand Variant +560
+          quantity: 5,
+          unitPrice: 1760 // 1200 + 560
+        },
+        {
+          productId: 'PROD-002',
+          variantId: 'var-5', // Unlimited Entities +$220
+          quantity: 2,
+          unitPrice: 500 // 280 + 220
+        },
+        {
+          productId: 'PROD-004',
+          variantId: 'var-9', // Gold 4h SLA +$250
+          quantity: 1,
+          unitPrice: 700 // 450 + 250
+        }
+      ]
+    }
+  ],
+  subscriptions: [
+    {
+      id: 'SUB-2026-001',
+      subscriptionNumber: 'SUB-2026-001',
+      customerId: 'USR-003',
+      customerName: 'Sarah Chen (Acme Corp)',
+      customerEmail: 'sarah@acmecorp.com',
+      planId: 'PLAN-002',
+      planName: 'Enterprise Annual',
+      billingFrequency: 'yearly',
+      status: 'Active', // Draft, Quotation, Confirmed, Active, Paused, Closed
+      startDate: '2026-01-01',
+      expiryDate: '2026-12-31',
+      nextBillingDate: '2026-10-31', // Due today for Billing Day demo!
+      lastBilledDate: '2026-01-01',
+      paymentTerms: 'Net 30',
+      taxId: 'TAX-001',
+      discountCode: 'SEATS20',
+      lines: [
+        {
+          id: 'line-1',
+          productId: 'PROD-001',
+          productName: 'Brightloop ERP Core',
+          variantId: 'var-2',
+          variantName: 'Brand Edition (+560)',
+          quantity: 5,
+          unitPrice: 1760,
+          total: 8800
+        },
+        {
+          id: 'line-2',
+          productId: 'PROD-002',
+          productName: 'Multi-Entity Ledger Consolidation',
+          variantId: 'var-5',
+          variantName: 'Unlimited Global Entities (+220)',
+          quantity: 2,
+          unitPrice: 500,
+          total: 1000
+        }
+      ]
+    },
+    {
+      id: 'SUB-2026-002',
+      subscriptionNumber: 'SUB-2026-002',
+      customerId: 'USR-004',
+      customerName: 'David Patel (Nova Retail)',
+      customerEmail: 'david@novaretail.com',
+      planId: 'PLAN-001',
+      planName: 'Growth Monthly',
+      billingFrequency: 'monthly',
+      status: 'Active',
+      startDate: '2026-09-01',
+      expiryDate: '2027-09-01',
+      nextBillingDate: '2026-10-31', // Due today for Billing Day demo!
+      lastBilledDate: '2026-09-01',
+      paymentTerms: 'Due on Receipt',
+      taxId: 'TAX-001',
+      discountCode: '',
+      lines: [
+        {
+          id: 'line-3',
+          productId: 'PROD-001',
+          productName: 'Brightloop ERP Core',
+          variantId: 'var-1',
+          variantName: 'Standard Edition (+0)',
+          quantity: 1,
+          unitPrice: 1200,
+          total: 1200
+        },
+        {
+          id: 'line-4',
+          productId: 'PROD-003',
+          productName: 'AI Invoice OCR & Bank Reconciliation',
+          variantId: 'var-6',
+          variantName: 'Standard Batch OCR (+0)',
+          quantity: 1,
+          unitPrice: 160,
+          total: 160
+        }
+      ]
+    },
+    {
+      id: 'SUB-2026-003',
+      subscriptionNumber: 'SUB-2026-003',
+      customerId: 'USR-005',
+      customerName: 'Liam Torres (Zenith Systems)',
+      customerEmail: 'liam@zenithsystems.io',
+      planId: 'PLAN-001',
+      planName: 'Growth Monthly',
+      billingFrequency: 'monthly',
+      status: 'Quotation',
+      startDate: '2026-11-01',
+      expiryDate: '2027-11-01',
+      nextBillingDate: '2026-11-01',
+      lastBilledDate: null,
+      paymentTerms: 'Net 15',
+      taxId: 'TAX-002',
+      discountCode: 'STARTUP100',
+      lines: [
+        {
+          id: 'line-5',
+          productId: 'PROD-001',
+          productName: 'Brightloop ERP Core',
+          variantId: 'var-1',
+          variantName: 'Standard Edition (+0)',
+          quantity: 2,
+          unitPrice: 1200,
+          total: 2400
+        }
+      ]
+    },
+    {
+      id: 'SUB-2026-004',
+      subscriptionNumber: 'SUB-2026-004',
+      customerId: 'USR-003',
+      customerName: 'Sarah Chen (Acme Corp)',
+      customerEmail: 'sarah@acmecorp.com',
+      planId: 'PLAN-003',
+      planName: 'Pilot Weekly Sprint',
+      billingFrequency: 'weekly',
+      status: 'Draft',
+      startDate: '2026-11-05',
+      expiryDate: '2026-11-19',
+      nextBillingDate: '2026-11-05',
+      lastBilledDate: null,
+      paymentTerms: 'Due on Receipt',
+      taxId: 'TAX-001',
+      discountCode: '',
+      lines: [
+        {
+          id: 'line-6',
+          productId: 'PROD-004',
+          productName: 'Dedicated 24/7 SLA & Mission Critical Support',
+          variantId: 'var-8',
+          variantName: 'Silver 12h SLA (+0)',
+          quantity: 1,
+          unitPrice: 450,
+          total: 450
+        }
+      ]
+    },
+    {
+      id: 'SUB-2026-005',
+      subscriptionNumber: 'SUB-2026-005',
+      customerId: 'USR-004',
+      customerName: 'David Patel (Nova Retail)',
+      customerEmail: 'david@novaretail.com',
+      planId: 'PLAN-001',
+      planName: 'Growth Monthly',
+      billingFrequency: 'monthly',
+      status: 'Paused',
+      startDate: '2026-05-01',
+      expiryDate: '2027-05-01',
+      nextBillingDate: '2026-11-15',
+      lastBilledDate: '2026-09-01',
+      paymentTerms: 'Net 15',
+      taxId: 'TAX-001',
+      discountCode: '',
+      lines: [
+        {
+          id: 'line-7',
+          productId: 'PROD-001',
+          productName: 'Brightloop ERP Core',
+          variantId: 'var-1',
+          variantName: 'Standard Edition (+0)',
+          quantity: 1,
+          unitPrice: 1200,
+          total: 1200
+        }
+      ]
+    }
+  ],
+  invoices: [
+    {
+      id: 'INV-2026-001',
+      invoiceNumber: 'INV-2026-001',
+      subscriptionId: 'SUB-2026-001',
+      subscriptionNumber: 'SUB-2026-001',
+      customerId: 'USR-003',
+      customerName: 'Sarah Chen (Acme Corp)',
+      customerEmail: 'sarah@acmecorp.com',
+      issueDate: '2026-01-01',
+      dueDate: '2026-01-31',
+      paymentTerms: 'Net 30',
+      status: 'Paid', // Draft, Confirmed, Paid, Overdue, Cancelled
+      subtotal: 9800,
+      discountAmount: 1960, // 20% SEATS20
+      taxRate: 18,
+      taxAmount: 1411.2,
+      totalAmount: 9251.2,
+      amountPaid: 9251.2,
+      balanceDue: 0,
+      billingPeriod: '2026-01-01 to 2026-12-31',
+      sentAt: '2026-01-01T10:00:00Z',
+      lines: [
+        {
+          productName: 'Brightloop ERP Core (Brand Edition)',
+          quantity: 5,
+          unitPrice: 1760,
+          amount: 8800
+        },
+        {
+          productName: 'Multi-Entity Ledger Consolidation (Unlimited Global Entities)',
+          quantity: 2,
+          unitPrice: 500,
+          amount: 1000
+        }
+      ]
+    },
+    {
+      id: 'INV-2026-002',
+      invoiceNumber: 'INV-2026-002',
+      subscriptionId: 'SUB-2026-002',
+      subscriptionNumber: 'SUB-2026-002',
+      customerId: 'USR-004',
+      customerName: 'David Patel (Nova Retail)',
+      customerEmail: 'david@novaretail.com',
+      issueDate: '2026-09-01',
+      dueDate: '2026-09-15', // Past due!
+      paymentTerms: 'Net 15',
+      status: 'Overdue',
+      subtotal: 1360,
+      discountAmount: 0,
+      taxRate: 18,
+      taxAmount: 244.8,
+      totalAmount: 1604.8,
+      amountPaid: 0,
+      balanceDue: 1604.8,
+      billingPeriod: '2026-09-01 to 2026-09-30',
+      sentAt: '2026-09-01T12:00:00Z',
+      lastChasedAt: null,
+      lines: [
+        {
+          productName: 'Brightloop ERP Core (Standard)',
+          quantity: 1,
+          unitPrice: 1200,
+          amount: 1200
+        },
+        {
+          productName: 'AI Invoice OCR & Bank Reconciliation',
+          quantity: 1,
+          unitPrice: 160,
+          amount: 160
+        }
+      ]
+    },
+    {
+      id: 'INV-2026-003',
+      invoiceNumber: 'INV-2026-003',
+      subscriptionId: 'SUB-2026-003',
+      subscriptionNumber: 'SUB-2026-003',
+      customerId: 'USR-005',
+      customerName: 'Liam Torres (Zenith Systems)',
+      customerEmail: 'liam@zenithsystems.io',
+      issueDate: '2026-10-25',
+      dueDate: '2026-11-10',
+      paymentTerms: 'Net 15',
+      status: 'Confirmed',
+      subtotal: 2400,
+      discountAmount: 100, // STARTUP100
+      taxRate: 8.25,
+      taxAmount: 189.75,
+      totalAmount: 2489.75,
+      amountPaid: 1000,
+      balanceDue: 1489.75,
+      billingPeriod: '2026-11-01 to 2026-11-30',
+      sentAt: '2026-10-25T14:30:00Z',
+      lastChasedAt: null,
+      lines: [
+        {
+          productName: 'Brightloop ERP Core (Standard)',
+          quantity: 2,
+          unitPrice: 1200,
+          amount: 2400
+        }
+      ]
+    }
+  ],
+  payments: [
+    {
+      id: 'PAY-2026-001',
+      paymentNumber: 'PAY-2026-001',
+      invoiceId: 'INV-2026-001',
+      invoiceNumber: 'INV-2026-001',
+      customerId: 'USR-003',
+      customerName: 'Sarah Chen (Acme Corp)',
+      amount: 9251.2,
+      method: 'Bank Wire / ACH',
+      paymentDate: '2026-01-05',
+      note: 'Wire transfer confirmed via JPMorgan Chase Ref: W9841289',
+      recordedBy: 'Marcus Brody (Staff)',
+      createdAt: '2026-01-05T11:20:00Z'
+    },
+    {
+      id: 'PAY-2026-002',
+      paymentNumber: 'PAY-2026-002',
+      invoiceId: 'INV-2026-003',
+      invoiceNumber: 'INV-2026-003',
+      customerId: 'USR-005',
+      customerName: 'Liam Torres (Zenith Systems)',
+      amount: 1000,
+      method: 'Credit Card (Stripe)',
+      paymentDate: '2026-10-26',
+      note: 'Partial initial down payment - token ch_3Q88s129841',
+      recordedBy: 'Liam Torres (Customer Portal)',
+      createdAt: '2026-10-26T09:15:00Z'
+    }
+  ],
+  auditLogs: [
+    {
+      id: 'LOG-001',
+      action: 'SYSTEM_INIT',
+      details: 'Brightloop Subscription & Recurring Billing Engine initialized.',
+      timestamp: '2026-10-31T09:00:00Z',
+      user: 'System'
+    }
+  ]
+});
+
+class Database {
+  constructor() {
+    this.init();
+  }
+
+  init() {
+    if (!fs.existsSync(DATA_FILE)) {
+      this.data = getInitialData();
+      this.save();
+    } else {
+      try {
+        const raw = fs.readFileSync(DATA_FILE, 'utf-8');
+        this.data = JSON.parse(raw);
+      } catch (e) {
+        console.error('Failed reading data.json, reinitializing initial data', e);
+        this.data = getInitialData();
+        this.save();
+      }
+    }
+  }
+
+  save() {
+    fs.writeFileSync(DATA_FILE, JSON.stringify(this.data, null, 2), 'utf-8');
+  }
+
+  reset() {
+    this.data = getInitialData();
+    this.save();
+    return this.data;
+  }
+}
+
+export const db = new Database();
+
