@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-paper: #F3EFE6;
+  --bg-surface: #FAF7F0;
+  --bg-sand: #E6D9B8;
+  --border: #D9D3C4;
+  --text-ink: #1C211F;
+  --text-muted: #5E655F;
+  --color-primary: #0F4C45;
+  --color-accent: #C0532D;
+}
+
+body {
+  background-color: var(--bg-paper);
+  color: var(--text-ink);
+  font-family: var(--font-instrument), sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+}
+
+/* Shape utilities matching the BRIGHTLOOP design system */
+.shape-arch {
+  border-radius: 170px 170px 26px 26px;
+}
+
+.shape-leaf {
+  border-radius: 22px 4px 22px 4px;
+}
+
+.shape-row {
+  border-radius: 14px 3px 14px 3px;
+}
+
+.font-mono-tabular {
+  font-family: var(--font-ibm-mono), monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Print styles for invoice printing */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+}
